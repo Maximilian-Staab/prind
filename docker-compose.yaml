@@ -83,7 +83,8 @@ services:
       traefik.enable: true
       traefik.http.services.octoprint.loadbalancer.server.port: 5000
       traefik.http.routers.octoprint.rule: PathPrefix(`/`)
-      traefik.http.routers.octoprint.entrypoints: web
+      traefik.http.routers.octoprint.entrypoints: web, websecure
+      traefik.http.routers.octoprint.tls: true
 
   fluidd:
     image: ghcr.io/fluidd-core/fluidd:latest
@@ -95,7 +96,8 @@ services:
       traefik.enable: true
       traefik.http.services.fluidd.loadbalancer.server.port: 80
       traefik.http.routers.fluidd.rule: PathPrefix(`/`)
-      traefik.http.routers.fluidd.entrypoints: web
+      traefik.http.routers.fluidd.entrypoints: web, websecure
+      traefik.http.routers.fluidd.tls: true
 
   mainsail:
     image: ghcr.io/mainsail-crew/mainsail:edge
