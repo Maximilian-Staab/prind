@@ -57,10 +57,17 @@ services:
     labels:
       org.prind.service: moonraker
       traefik.enable: true
+      # Insecure endpoint
       traefik.http.services.moonraker.loadbalancer.server.port: 7125
+      traefik.http.routers.moonraker.service: moonraker
       traefik.http.routers.moonraker.rule: PathPrefix(`/websocket`) ||  PathPrefix(`/printer`) ||  PathPrefix(`/api`) ||  PathPrefix(`/access`) ||  PathPrefix(`/machine`) || PathPrefix(`/server`)
-      traefik.http.routers.moonraker.entrypoints: web, websecure
-      traefik.http.routers.moonraker.tls: true
+      traefik.http.routers.moonraker.entrypoints: web
+      # Secure endpoint
+      traefik.http.services.moonraker-ssl.loadbalancer.server.port: 7125
+      traefik.http.routers.moonraker-ssl.service: moonraker-ssl
+      traefik.http.routers.moonraker-ssl.rule: PathPrefix(`/`)
+      traefik.http.routers.moonraker-ssl.entrypoints: websecure
+      traefik.http.routers.moonraker-ssl.tls: true
 
   ## Frontends
   ##
@@ -81,10 +88,17 @@ services:
     labels:
       org.prind.service: octoprint
       traefik.enable: true
-      traefik.http.services.octoprint.loadbalancer.server.port: 5000
+      # Insecure endpoint
+      traefik.http.services.octoprint.loadbalancer.server.port: 80
+      traefik.http.routers.octoprint.service: octoprint
       traefik.http.routers.octoprint.rule: PathPrefix(`/`)
-      traefik.http.routers.octoprint.entrypoints: web, websecure
-      traefik.http.routers.octoprint.tls: true
+      traefik.http.routers.octoprint.entrypoints: web
+      # SSL endpoint
+      traefik.http.services.octoprint-ssl.loadbalancer.server.port: 80
+      traefik.http.routers.octoprint-ssl.service: octoprint-ssl
+      traefik.http.routers.octoprint-ssl.entrypoints: websecure
+      traefik.http.routers.octoprint-ssl.rule: PathPrefix(`/`)
+      traefik.http.routers.octoprint-ssl.tls: true
 
   fluidd:
     image: ghcr.io/fluidd-core/fluidd:latest
@@ -94,10 +108,17 @@ services:
     labels:
       org.prind.service: fluidd
       traefik.enable: true
+      # Insecure endpoint
       traefik.http.services.fluidd.loadbalancer.server.port: 80
+      traefik.http.routers.fluidd.service: fluidd
       traefik.http.routers.fluidd.rule: PathPrefix(`/`)
-      traefik.http.routers.fluidd.entrypoints: web, websecure
-      traefik.http.routers.fluidd.tls: true
+      traefik.http.routers.fluidd.entrypoints: web
+      # SSL endpoint
+      traefik.http.services.fluidd-ssl.loadbalancer.server.port: 80
+      traefik.http.routers.fluidd-ssl.service: fluidd-ssl
+      traefik.http.routers.fluidd-ssl.entrypoints: websecure
+      traefik.http.routers.fluidd-ssl.rule: PathPrefix(`/`)
+      traefik.http.routers.fluidd-ssl.tls: true
 
   mainsail:
     image: ghcr.io/mainsail-crew/mainsail:edge
@@ -107,10 +128,17 @@ services:
     labels:
       org.prind.service: mainsail
       traefik.enable: true
+      # Insecure endpoint
       traefik.http.services.mainsail.loadbalancer.server.port: 80
+      traefik.http.routers.mainsail.service: mainsail
       traefik.http.routers.mainsail.rule: PathPrefix(`/`)
-      traefik.http.routers.mainsail.entrypoints: web, websecure
-      traefik.http.routers.mainsail.tls: true
+      traefik.http.routers.mainsail.entrypoints: web
+      # SSL endpoint
+      traefik.http.services.mainsail-ssl.loadbalancer.server.port: 80
+      traefik.http.routers.mainsail-ssl.service: mainsail-ssl
+      traefik.http.routers.mainsail-ssl.entrypoints: websecure
+      traefik.http.routers.mainsail-ssl.rule: PathPrefix(`/`)
+      traefik.http.routers.mainsail-ssl.tls: true
 
   ## additional Services
   ##
@@ -207,6 +235,7 @@ services:
   traefik:
     image: traefik:v2.11
     command:
+      - "--api.insecure=true"
       - "--accesslog"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
@@ -218,6 +247,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
+      - "8080:8080"
     restart: unless-stopped
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
