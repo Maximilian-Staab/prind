@@ -1,6 +1,5 @@
 ## Service Definitions
 services:
-
   ## Klippy Services
   ##
   klipper:
@@ -60,7 +59,8 @@ services:
       traefik.enable: true
       traefik.http.services.moonraker.loadbalancer.server.port: 7125
       traefik.http.routers.moonraker.rule: PathPrefix(`/websocket`) ||  PathPrefix(`/printer`) ||  PathPrefix(`/api`) ||  PathPrefix(`/access`) ||  PathPrefix(`/machine`) || PathPrefix(`/server`)
-      traefik.http.routers.moonraker.entrypoints: web
+      traefik.http.routers.moonraker.entrypoints: web, websecure
+      traefik.http.routers.moonraker.tls: true
 
   ## Frontends
   ##
@@ -107,7 +107,8 @@ services:
       traefik.enable: true
       traefik.http.services.mainsail.loadbalancer.server.port: 80
       traefik.http.routers.mainsail.rule: PathPrefix(`/`)
-      traefik.http.routers.mainsail.entrypoints: web
+      traefik.http.routers.mainsail.entrypoints: web, websecure
+      traefik.http.routers.mainsail.tls: true
 
   ## additional Services
   ##
@@ -208,11 +209,17 @@ services:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.websecure.http.encodequerysemicolons=true"
+      # tls certificate files
+      - "--providers.file.filename=/opt/ssl/tls.yml"
     ports:
       - "80:80"
+      - "443:443"
     restart: unless-stopped
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./config/ssl:/opt/ssl"
     labels:
       org.prind.service: traefik
 
