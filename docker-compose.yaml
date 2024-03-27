@@ -235,7 +235,6 @@ services:
   traefik:
     image: traefik:v2.11
     command:
-      - "--api.insecure=true"
       - "--accesslog"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
@@ -247,7 +246,6 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      - "8080:8080"
     restart: unless-stopped
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
