@@ -65,7 +65,7 @@ services:
       # Secure endpoint
       traefik.http.services.moonraker-ssl.loadbalancer.server.port: 7125
       traefik.http.routers.moonraker-ssl.service: moonraker-ssl
-      traefik.http.routers.moonraker-ssl.rule: PathPrefix(`/`)
+      traefik.http.routers.moonraker-ssl.rule: PathPrefix(`/websocket`) ||  PathPrefix(`/printer`) ||  PathPrefix(`/api`) ||  PathPrefix(`/access`) ||  PathPrefix(`/machine`) || PathPrefix(`/server`)
       traefik.http.routers.moonraker-ssl.entrypoints: websecure
       traefik.http.routers.moonraker-ssl.tls: true
 
